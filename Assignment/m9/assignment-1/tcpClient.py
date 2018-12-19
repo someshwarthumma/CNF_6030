@@ -1,7 +1,7 @@
 import socket
 def main():
 	host = '10.10.9.65'
-	port = 5501
+	port = 5507
 	s = socket.socket()
 	s.connect((host, port))
 	print("Connection established..!!!")
@@ -12,7 +12,7 @@ def main():
 			s.send(message.encode())
 			message = s.recv(1024)
 			print("output : "+message.decode())
-			if message.decode() == "Bingo!! You Guessed correct.":
+			if message.decode().split(" ")[0] == "Bingo!!":
 				break
 			message = input("Input: ")
 
