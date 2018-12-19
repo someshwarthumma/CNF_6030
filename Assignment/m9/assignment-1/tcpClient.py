@@ -1,6 +1,6 @@
 import socket
 def main():
-	host = '10.10.9.65'
+	host = '10.1.132.23'
 	port = 5507
 	s = socket.socket()
 	s.connect((host, port))

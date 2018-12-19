@@ -3,7 +3,7 @@ import random
 import threading
 
 def main():
-	host = '10.10.9.65'
+	host = '10.1.132.23'
 	port = 5507
 	s= socket.socket()
 	s.bind((host, port))
@@ -26,6 +26,7 @@ def game(c, addr):
 			break
 		#Guesser implimentation.
 		data = int(data)
+		print("client "+str(addr)+" guessed: "+str(data))
 		if data == num:
 			String = "Bingo!! You Guessed correct number in: "+str(count)+" attempts"
 			c.send(String.encode())
