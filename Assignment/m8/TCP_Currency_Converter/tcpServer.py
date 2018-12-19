@@ -1,18 +1,16 @@
 import socket
 
 def main():
-	host = '10.10.9.65'
+	host = '10.1.132.23'
 	port = 5522
 	s= socket.socket()
 	s.bind((host, port))
 	s.listen(1)
-	
+	print("server started..!!")
 	c, addr = s.accept()
 	print()
 	print("Connection established: "+ str(addr))
-	print("server started..!!")
 	while True:
-		print("server started..!!")
 		data = c.recv(1024).decode()
 		if not data:
 			break

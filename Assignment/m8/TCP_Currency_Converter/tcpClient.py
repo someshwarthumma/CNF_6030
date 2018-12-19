@@ -1,7 +1,7 @@
 import socket
 def main():
-	host = '10.10.9.6'
-	port = 1234
+	host = '10.1.132.23'
+	port = 5522
 	s = socket.socket()
 	s.connect((host, port))
 	print("Connection established..!!!")
