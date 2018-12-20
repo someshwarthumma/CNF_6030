@@ -1,83 +1,88 @@
 import socket
-import threading
+from threading import *
+import os
+import signal
+import time
 clientDict = {}
 s = socket.socket()
-Flag = True
 def main():
-	host = '10.10.9.65'
-	port = 1236
-	s.bind((host, port))
-	s.listen(20)
-	print("Server started..! at: "+str(host))
-	threading.Thread(target = admin, args = ()).start()
-	while Flag:
-		try:
-			conn, addr = s.accept()
-			print("client at entering his name at IP: "+str(addr))
-			welcomeMsg = "Welcome to the Group Chat! \nPlease enter your name to start the chatting: "
-			conn.send(welcomeMsg.encode())
-			UserName = conn.recv(1024).decode()
-			print(UserName+" joined the group chat!")
-			if conn not in clientDict:
-				clientDict[conn] = UserName
-				threading.Thread(target = Messenger, args = (conn, UserName)).start()
-			else:
-				conn.send("Oops!!! \n Error Occured, Try after some time".encode())
-				clientDict.pop(conn)
-		except:
-			print("server closed")
-			break
-	s.close()
+    host = '10.10.9.65'
+    port = 1249
+    s.bind((host, port))
+    s.listen(10)
+    print("Server started..! at: "+str(host))
+    Thread(target = admin, args = ()).start()
+    while True:
+        conn, addr = s.accept()
+        print("client entering his name at IP: "+str(addr))
+        welcomeMsg = "Welcome to the Group Chat! \nPlease enter your name to start the chatting: "
+        conn.send(welcomeMsg.encode())
+        if conn not in clientDict:
+            clientDict[conn] = "user"
+            Thread(target = Messenger, args = (conn, "user")).start()
+        else:
+            conn.send("Oops!!! \n Error Occured, Try after some time".encode())
+            clientDict.pop(conn)
+    s.close()
 
 def Messenger(conn, UserName):
-	
-	try:
-		while conn in clientDict:
-			msg = conn.recv(1024).decode()
-			if msg == "QUIT":
-				clientDict.pop(conn)
-				conn.send("You successfully exited your chat,Thank you ! ".encode())
-			else:
-				msg = UserName + ": " + msg
-				Broadcast(conn,msg)
-	except:
-		clientDict.pop(conn)
-		conn.send("Oops ! Error Occured, please Connect again ! ".encode())
-	s.close()
+    UserName = conn.recv(1024).decode()
+    clientDict[conn] = UserName
+    Broadcast(conn, UserName+" joined the group chat!")
+    try:
+        while conn in clientDict:
+            msg = conn.recv(1024).decode()
+            if msg == "QUIT":
+                msg = UserName+ " exited the chat !"
+                Broadcast(conn, msg)
+                conn.send("You successfully exited your chat,Thank you ! ".encode())
+                clientDict.pop(conn)
+                check()
+                return 1
+            else:
+                msg = UserName + ": " + msg+"  "
+                Broadcast(conn,msg)
+    except:
+        clientDict.pop(conn)
+        conn.send("Oops ! Error Occured, please Connect again ! ".encode())
 
-
+def check():
+    if (active_count() == 3):
+        Notifier("Waiting to close the group chat, no member online.")
+        time.sleep(10)
+        if (active_count() == 3):
+            os.kill(os.getpid(), signal.CTRL_BREAK_EVENT)
 def admin():
-	print("A1")
-	# print("PT 1")
-	while True:
-		msg = input("-> ")
-		if not msg:
-			continue
-		if msg == "QUIT":
-			Notifier("Group chat closed by admin")
-			Flag = False
-			s.close()
-			break
-		else:
-			if not msg:
-				continue
-			else:
-				Notifier(msg)
+    while True:
+        msg = input("-> ")
+        if not msg:
+            continue
+        if msg == "QUIT":
+            Notifier("Server will be shut down in 3 seconds! ")
+            time.sleep(3)
+            print("server closed")
+            os.kill(os.getpid(), signal.CTRL_BREAK_EVENT)
+            break
+        else:
+            Notifier(msg)
 
 
 def Broadcast(conn, msg):
-	keys = clientDict.keys()
-	print(msg)
-	for connection in keys:
-		if conn != connection:
-			connection.send(msg.encode())
+    keys = clientDict.keys()
+    print(msg)
+    for connection in keys:
+        if conn != connection:
+            connection.send(msg.encode())
+
+
 def Notifier(msg):
-	keys = clientDict.keys()
-	print(msg)
-	for connection in keys:
-		connection.send(msg.encode())
+    msg = "Admin: "+ msg+ " "
+    keys = clientDict.keys()
+    print(msg)
+    for connection in keys:
+        connection.send(msg.encode())
 
 
 
 if __name__ == '__main__':
-	main()
+    main()

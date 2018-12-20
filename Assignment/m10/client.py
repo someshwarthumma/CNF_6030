@@ -1,10 +1,10 @@
 import socket
 import threading
+import os, signal
 s = socket.socket()
 def main():
 	host = '10.10.9.65'
-	port = 1236
-	
+	port = 1249
 	s.connect((host, port))
 	welcomeMsg = s.recv(1024).decode()
 	print(welcomeMsg)
@@ -13,10 +13,15 @@ def main():
 	while True:
 		try:
 			msg = s.recv(1024).decode()
+			print(msg)
+			if msg == "You successfully exited your chat,Thank you ! ":
+				os.kill(os.getpid(), signal.CTRL_BREAK_EVENT)
 			if not msg:
 				continue
-			print(msg)
+			
+
 		except:
+			print("Oops!, Host server Closed by admin.")
 			break
 	s.close()
 def sender():
@@ -25,8 +30,6 @@ def sender():
 		if not msg:
 			continue
 		s.send(msg.encode())
-		if msg == "QUIT":
-			break
 	s.close()
 
 if __name__ == '__main__':
