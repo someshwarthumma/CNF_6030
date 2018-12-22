@@ -8,8 +8,8 @@ import os
 studentDict = {}
 clientLis = []
 def main():
-	host = '10.10.9.65'
-	port = 6009
+	host = '10.1.132.23'
+	port = 6010
 	s = socket.socket()
 	s.bind((host, port))
 	s.listen(1)
@@ -30,33 +30,33 @@ def Attendance(conn, studentDict):
 	welMsg = "Welcome!! \nPlease provide your rollnumber"
 	conn.send(welMsg.encode())
 	# print("11")
+	rollnum = 0
+	secret = ""
+	ans = ""
 	count = 10
 	while True and count!= 0:
 		msg = conn.recv(1024).decode()
 		# print(msg)
 		data = msg.split(" ")
 		# print("data: "+str(data))
-		rollnum = 0
-		secret = ""
-		ans = ""
 		# print(data[0])
 		if data[0] == "MARK-ATTENDANCE":
 			if check(int(data[1])):
 				rollnum = int(data[1])
 				detail = studentDict.get(str(rollnum))
 				details = detail.split(" ** ")
-				print(details)
+				# print(details)
 				secret = details[0]
 				ans = details[1]
 				# ans = Substr(ans, 0, len(ans)-1)
-				ans.replace("\n", "")
+				ans = ans.replace("\n", "")
 				reMsg = "SECRETQUESTION-"+secret
 				conn.send(reMsg.encode())
 			else:
 				conn.send("ROLLNUMBER-NOTFOUND".encode())
 				print("rollnum not found: "+str(rollnum))
 		elif data[0] == "SECRETANSWER":
-			print(data[1] +" == "+ans)
+			# print(data[1] +" == "+ans)
 			if str(data[1]) == str(ans):
 				conn.send("ATTENDANCE SUCCESS".encode())
 				print("success for rollnum: "+str(rollnum))

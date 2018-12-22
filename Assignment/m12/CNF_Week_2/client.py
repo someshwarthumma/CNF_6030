@@ -3,8 +3,8 @@ from threading import *
 
 
 def main():
-	host = '10.10.9.65'
-	port = 6008
+	host = '10.1.132.23'
+	port = 6010
 	s = socket.socket()
 	s.connect((host, port))
 	welcomeMsg = s.recv(1024).decode()
@@ -12,7 +12,7 @@ def main():
 	# Thread(target = sender, args = ())
 	msg = input("RollNum: ")
 	msg = "MARK-ATTENDANCE "+msg
-	print(msg)
+	# print(msg)
 	s.send(msg.encode())
 	while True:
 		message = s.recv(1024).decode()
@@ -22,7 +22,7 @@ def main():
 			print("Secret Quention: "+dat)
 			inp = input()
 			inp = "SECRETANSWER "+inp
-			print(inp)
+			# print(inp)
 			s.send(inp.encode())
 		elif message.split("-")[0] == "ATTENDANCE SUCCESS":
 			print("ATTENDANCE SUCCESS")
